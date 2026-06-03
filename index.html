@@ -1,191 +1,178 @@
-<!DOCTYPE html>
+<!doctype html>
 
 <html lang="ja">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>旅行ログアプリ</title>
 
     <!-- Leaflet -->
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: sans-serif;
-            background: #f4f6f9;
-        }
+      body {
+        font-family: sans-serif;
+        background: #f4f6f9;
+      }
 
-        header {
-            background: #1976d2;
-            color: white;
-            padding: 15px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-        }
+      header {
+        background: #1976d2;
+        color: white;
+        padding: 15px;
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+      }
 
-        .container {
-            padding: 15px;
-        }
+      .container {
+        padding: 15px;
+      }
 
-        .card {
-            background: white;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
+      .card {
+        background: white;
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
 
-        input {
-            width: 100%;
-            padding: 12px;
-            margin-top: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 16px;
-        }
+      input {
+        width: 100%;
+        padding: 12px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 16px;
+      }
 
-        button {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            cursor: pointer;
-            margin-top: 8px;
-        }
+      button {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 8px;
+        font-size: 18px;
+        cursor: pointer;
+        margin-top: 8px;
+      }
 
-        .primary {
-            background: #1976d2;
-            color: white;
-        }
+      .primary {
+        background: #1976d2;
+        color: white;
+      }
 
-        .success {
-            background: #2e7d32;
-            color: white;
-        }
+      .success {
+        background: #2e7d32;
+        color: white;
+      }
 
-        .danger {
-            background: #d32f2f;
-            color: white;
-        }
+      .danger {
+        background: #d32f2f;
+        color: white;
+      }
 
-        #map {
-            width: 100%;
-            height: 500px;
-            border-radius: 12px;
-        }
+      #map {
+        width: 100%;
+        height: 500px;
+        border-radius: 12px;
+        touch-action: pan-y;
+      }
 
-        #userInfo {
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
+      #userInfo {
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
 
-        .hidden {
-            display: none;
-        }
+      .hidden {
+        display: none;
+      }
     </style>
+  </head>
 
-</head>
-
-<body>
-
-    <header>
-        旅行ログアプリ
-    </header>
+  <body>
+    <header>旅行ログアプリ</header>
 
     <div class="container">
+      <!-- ログイン画面 -->
+      <div id="authArea" class="card">
+        <h2>ログイン</h2>
 
-        <!-- ログイン画面 -->
-        <div id="authArea" class="card">
+        <input type="email" id="email" placeholder="メールアドレス" />
 
-            <h2>ログイン</h2>
+        <input type="password" id="password" placeholder="パスワード" />
 
-            <input type="email" id="email" placeholder="メールアドレス">
+        <button class="primary" onclick="signUp()">新規登録</button>
 
-            <input type="password" id="password" placeholder="パスワード">
+        <button class="success" onclick="login()">ログイン</button>
+      </div>
 
-            <button class="primary" onclick="signUp()">
-                新規登録
-            </button>
+      <!-- アプリ画面 -->
+      <div id="appArea" class="hidden">
+        <div class="card">
+          <div id="userInfo"></div>
 
-            <button class="success" onclick="login()">
-                ログイン
-            </button>
-
+          <button class="danger" onclick="logout()">ログアウト</button>
         </div>
+        <div class="card">
+          <h3>旅行記録</h3>
 
-        <!-- アプリ画面 -->
-        <div id="appArea" class="hidden">
+          <textarea
+            id="memo"
+            placeholder="メモを入力"
+            style="
+              width: 100%;
+              height: 100px;
+              padding: 10px;
+              border-radius: 8px;
+              border: 1px solid #ccc;
+              margin-top: 10px;
+            "
+          ></textarea>
 
-            <div class="card">
+          <br /><br />
 
-                <div id="userInfo"></div>
+          <input
+            type="file"
+            id="photo"
+            accept="image/*"
+            capture="environment"
+          />
 
-                <button class="danger" onclick="logout()">
-                    ログアウト
-                </button>
+          <img
+            id="preview"
+            style="
+              width: 100%;
+              max-width: 300px;
+              margin-top: 10px;
+              display: none;
+              border-radius: 10px;
+            "
+          />
 
-            </div>
-            <div class="card">
-
-                <h3>旅行記録</h3>
-
-                <textarea id="memo" placeholder="メモを入力" style="
-    width:100%;
-    height:100px;
-    padding:10px;
-    border-radius:8px;
-    border:1px solid #ccc;
-    margin-top:10px;
-">
-</textarea>
-
-                <br><br>
-
-                <input type="file" id="photo" accept="image/*" capture="environment">
-
-                <img id="preview" style="
-        width:100%;
-        max-width:300px;
-        margin-top:10px;
-        display:none;
-        border-radius:10px;">
-
-                <button class="success" onclick="saveLocation()">
-                    現在地を記録
-                </button>
-
-            </div>
-            <div class="card">
-
-                <h3>現在地マップ</h3>
-
-                <div id="map"></div>
-
-            </div>
-            <div class="card">
-
-                <h3>
-                    訪問履歴
-                    (<span id="logCount">0</span>件)
-                </h3>
-
-                <div id="historyArea"></div>
-
-            </div>
+          <button class="success" onclick="saveLocation()">現在地を記録</button>
         </div>
+        <div class="card">
+          <h3>現在地マップ</h3>
 
+          <div id="map"></div>
+        </div>
+        <div class="card">
+          <h3>訪問履歴 (<span id="logCount">0</span>件)</h3>
+
+          <div id="historyArea"></div>
+        </div>
+      </div>
     </div>
 
     <!-- Supabase -->
@@ -198,482 +185,335 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-gesture-handling/dist/leaflet-gesture-handling.min.css">
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet-gesture-handling/dist/leaflet-gesture-handling.min.css"
+    />
 
     <script src="https://unpkg.com/leaflet-gesture-handling/dist/leaflet-gesture-handling.min.js"></script>
     <script>
-
-        /* ===========================
+      /* ===========================
            Supabase設定
         =========================== */
 
-        const SUPABASE_URL =
-            "https://flefnottwzsbihgrqrqk.supabase.co";
+      const SUPABASE_URL = "https://flefnottwzsbihgrqrqk.supabase.co";
 
-        const SUPABASE_API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZsZWZub3R0d3pzYmloZ3JxcnFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxOTgxNzMsImV4cCI6MjA4OTc3NDE3M30.gvqf7_VRMZiPcGmQsWk_DCEJ0JmD_wcCCVzl-L9URKc";
+      const SUPABASE_API_KEY =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZsZWZub3R0d3pzYmloZ3JxcnFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxOTgxNzMsImV4cCI6MjA4OTc3NDE3M30.gvqf7_VRMZiPcGmQsWk_DCEJ0JmD_wcCCVzl-L9URKc";
 
-        const supabaseClient =
-            window.supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_API_KEY
-            );
+      const supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_API_KEY,
+      );
 
-        /* ===========================
+      /* ===========================
            グローバル
         =========================== */
 
-        let map;
-        let currentMarker;
-        let routePoints = [];
-        let routeLine = null;
+      let map;
+      let currentMarker;
+      let routePoints = [];
+      let routeLine = null;
 
-        /* ===========================
+      /* ===========================
            新規登録
         =========================== */
 
-        async function signUp() {
+      async function signUp() {
+        const email = document.getElementById("email").value;
 
-            const email =
-                document.getElementById("email").value;
+        const password = document.getElementById("password").value;
 
-            const password =
-                document.getElementById("password").value;
+        const { error } = await supabaseClient.auth.signUp({
+          email,
+          password,
+        });
 
-            const { error } =
-                await supabaseClient.auth.signUp({
-                    email,
-                    password
-                });
-
-            if (error) {
-                alert(error.message);
-                return;
-            }
-
-            alert(
-                "登録しました。メール認証してください。"
-            );
+        if (error) {
+          alert(error.message);
+          return;
         }
 
-        /* ===========================
+        alert("登録しました。メール認証してください。");
+      }
+
+      /* ===========================
            ログイン
         =========================== */
 
-        async function login() {
+      async function login() {
+        const email = document.getElementById("email").value;
 
-            const email =
-                document.getElementById("email").value;
+        const password = document.getElementById("password").value;
 
-            const password =
-                document.getElementById("password").value;
+        const { error } = await supabaseClient.auth.signInWithPassword({
+          email,
+          password,
+        });
 
-            const { error } =
-                await supabaseClient.auth.signInWithPassword({
-                    email,
-                    password
-                });
-
-            if (error) {
-                alert(error.message);
-                return;
-            }
-
-            await checkLogin();
+        if (error) {
+          alert(error.message);
+          return;
         }
 
-        /* ===========================
+        await checkLogin();
+      }
+
+      /* ===========================
            ログアウト
         =========================== */
 
-        async function logout() {
+      async function logout() {
+        await supabaseClient.auth.signOut();
 
-            await supabaseClient.auth.signOut();
+        location.reload();
+      }
 
-            location.reload();
-        }
-
-        /* ===========================
+      /* ===========================
            ログイン確認
         =========================== */
 
-        async function checkLogin() {
+      async function checkLogin() {
+        const {
+          data: { session },
+        } = await supabaseClient.auth.getSession();
 
-            const {
-                data: { session }
-            } =
-                await supabaseClient.auth.getSession();
+        if (!session) {
+          document.getElementById("authArea").classList.remove("hidden");
 
-            if (!session) {
+          document.getElementById("appArea").classList.add("hidden");
 
-                document
-                    .getElementById("authArea")
-                    .classList.remove("hidden");
-
-                document
-                    .getElementById("appArea")
-                    .classList.add("hidden");
-
-                return;
-            }
-
-            document
-                .getElementById("authArea")
-                .classList.add("hidden");
-
-            document
-                .getElementById("appArea")
-                .classList.remove("hidden");
-
-            document
-                .getElementById("userInfo")
-                .innerHTML =
-                session.user.email;
-
-            initMap();
-
-            await loadLogs();
+          return;
         }
 
-        /* ===========================
+        document.getElementById("authArea").classList.add("hidden");
+
+        document.getElementById("appArea").classList.remove("hidden");
+
+        document.getElementById("userInfo").innerHTML = session.user.email;
+
+        initMap();
+
+        await loadLogs();
+      }
+
+      /* ===========================
            地図初期化
         =========================== */
 
-        async function initMap() {
-
-            if (map) {
-                return;
-            }
-
-            map = L.map("map", {
-                scrollWheelZoom: false,
-                tap: true
-            }).setView(
-                [35.138, 132.225],
-                13
-            );
-
-            L.tileLayer(
-                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                {
-                    attribution:
-                        "&copy; OpenStreetMap"
-                }
-            ).addTo(map);
-
-            getCurrentLocation();
+      async function initMap() {
+        if (map) {
+          return;
         }
 
-        /* ===========================
+        map = L.map("map", {
+          gestureHandling: true,
+          scrollWheelZoom: false,
+        }).setView([35.138, 132.225], 13);
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution: "&copy; OpenStreetMap",
+        }).addTo(map);
+
+        getCurrentLocation();
+      }
+
+      /* ===========================
            現在地取得
         =========================== */
 
-        function getCurrentLocation() {
+      function getCurrentLocation() {
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            const lat = position.coords.latitude;
 
-            navigator.geolocation.getCurrentPosition(
+            const lng = position.coords.longitude;
 
-                function (position) {
+            map.setView([lat, lng], 15);
 
-                    const lat =
-                        position.coords.latitude;
+            if (currentMarker) {
+              map.removeLayer(currentMarker);
+            }
 
-                    const lng =
-                        position.coords.longitude;
+            currentMarker = L.marker([lat, lng])
+              .addTo(map)
+              .bindPopup("現在地")
+              .openPopup();
+          },
 
-                    map.setView(
-                        [lat, lng],
-                        15
-                    );
+          function (error) {
+            alert("GPS取得失敗 : " + error.message);
+          },
 
-                    if (currentMarker) {
-                        map.removeLayer(currentMarker);
-                    }
-
-                    currentMarker =
-                        L.marker([lat, lng])
-                            .addTo(map)
-                            .bindPopup("現在地")
-                            .openPopup();
-
-                },
-
-                function (error) {
-
-                    alert(
-                        "GPS取得失敗 : "
-                        + error.message
-                    );
-                },
-
-                {
-                    enableHighAccuracy: true
-                }
-            );
-        }
-        /* ===========================
+          {
+            enableHighAccuracy: true,
+          },
+        );
+      }
+      /* ===========================
            現在地保存
         =========================== */
 
-        async function saveLocation() {
+      async function saveLocation() {
+        try {
+          const {
+            data: { session },
+          } = await supabaseClient.auth.getSession();
 
-            try {
+          if (!session) {
+            alert("ログインしてください");
+            return;
+          }
 
-                const {
-                    data: { session }
-                } =
-                    await supabaseClient.auth.getSession();
+          navigator.geolocation.getCurrentPosition(
+            async (position) => {
+              const lat = position.coords.latitude;
 
-                if (!session) {
+              const lng = position.coords.longitude;
 
-                    alert("ログインしてください");
-                    return;
-                }
+              const memo = document.getElementById("memo").value;
 
-                navigator.geolocation.getCurrentPosition(
+              let imageUrl = null;
 
-                    async (position) => {
+              const file = document.getElementById("photo").files[0];
 
-                        const lat =
-                            position.coords.latitude;
-
-                        const lng =
-                            position.coords.longitude;
-
-                        const memo =
-                            document
-                                .getElementById("memo")
-                                .value;
-
-                        let imageUrl = null;
-
-                        const file =
-                            document
-                                .getElementById("photo")
-                                .files[0];
-
-                        /* ===================
+              /* ===================
                            Storage保存
                         ==================== */
 
-                        if (file) {
+              if (file) {
+                const fileName = Date.now() + "_" + file.name;
 
-                            const fileName =
-                                Date.now() +
-                                "_" +
-                                file.name;
+                const { error: uploadError } = await supabaseClient.storage
+                  .from("travel-images")
+                  .upload(fileName, file);
 
-                            const {
-                                error: uploadError
-                            } =
-                                await supabaseClient
-                                    .storage
-                                    .from("travel-images")
-                                    .upload(
-                                        fileName,
-                                        file
-                                    );
+                if (uploadError) {
+                  alert(uploadError.message);
 
-                            if (uploadError) {
+                  return;
+                }
 
-                                alert(
-                                    uploadError.message
-                                );
+                const { data: urlData } = supabaseClient.storage
+                  .from("travel-images")
+                  .getPublicUrl(fileName);
 
-                                return;
-                            }
+                imageUrl = urlData.publicUrl;
+              }
 
-                            const {
-                                data: urlData
-                            } =
-                                supabaseClient
-                                    .storage
-                                    .from("travel-images")
-                                    .getPublicUrl(
-                                        fileName
-                                    );
-
-                            imageUrl =
-                                urlData.publicUrl;
-                        }
-
-                        /* ===================
+              /* ===================
                            DB保存
                         ==================== */
 
-                        const {
-                            error
-                        } =
-                            await supabaseClient
-                                .from("travel_logs")
-                                .insert({
+              const { error } = await supabaseClient
+                .from("travel_logs")
+                .insert({
+                  user_id: session.user.id,
 
-                                    user_id:
-                                        session.user.id,
+                  latitude: lat,
 
-                                    latitude: lat,
+                  longitude: lng,
 
-                                    longitude: lng,
+                  memo: memo,
 
-                                    memo: memo,
+                  image_url: imageUrl,
+                });
 
-                                    image_url: imageUrl
-
-                                });
-
-                        if (error) {
-
-                            alert(
-                                error.message
-                            );
-
-                            return;
-                        }
-
-                        addMarker(
-                            lat,
-                            lng,
-                            memo,
-                            imageUrl
-                        );
-
-                        document
-                            .getElementById("memo")
-                            .value = "";
-
-                        document
-                            .getElementById("photo")
-                            .value = "";
-
-                        alert(
-                            "保存しました"
-                        );
-                        location.reload();
-                    },
-
-                    (error) => {
-
-                        alert(
-                            error.message
-                        );
-                    },
-
-                    {
-                        enableHighAccuracy: true
-                    }
-                );
-
-            } catch (error) {
-
+              if (error) {
                 alert(error.message);
-            }
+
+                return;
+              }
+
+              addMarker(lat, lng, memo, imageUrl);
+
+              document.getElementById("memo").value = "";
+
+              document.getElementById("photo").value = "";
+
+              alert("保存しました");
+              location.reload();
+            },
+
+            (error) => {
+              alert(error.message);
+            },
+
+            {
+              enableHighAccuracy: true,
+            },
+          );
+        } catch (error) {
+          alert(error.message);
         }
-        /* ===========================
+      }
+      /* ===========================
            マーカー表示
         =========================== */
 
-        function addMarker(
-            lat,
-            lng,
-            memo,
-            imageUrl
-        ) {
+      function addMarker(lat, lng, memo, imageUrl) {
+        let html = "";
 
-            let html = "";
-
-            if (memo) {
-
-                html +=
-                    "<b>メモ</b><br>" +
-                    memo +
-                    "<br><br>";
-            }
-
-            if (imageUrl) {
-
-                html +=
-                    "<img src='" +
-                    imageUrl +
-                    "' style='width:200px'>";
-            }
-
-            L.marker(
-                [lat, lng]
-            )
-                .addTo(map)
-                .bindPopup(html);
-
-            routePoints.push([
-                lat,
-                lng
-            ]);
-            drawRoute();
-
+        if (memo) {
+          html += "<b>メモ</b><br>" + memo + "<br><br>";
         }
-        function drawRoute() {
 
-            if (routeLine) {
-                map.removeLayer(routeLine);
-            }
-
-            if (routePoints.length < 2) {
-                return;
-            }
-
-            routeLine = L.polyline(
-                routePoints,
-                {
-                    weight: 5
-                }
-            ).addTo(map);
+        if (imageUrl) {
+          html += "<img src='" + imageUrl + "' style='width:200px'>";
         }
-        /* ===========================
+
+        L.marker([lat, lng]).addTo(map).bindPopup(html);
+
+        routePoints.push([lat, lng]);
+        drawRoute();
+      }
+      function drawRoute() {
+        if (routeLine) {
+          map.removeLayer(routeLine);
+        }
+
+        if (routePoints.length < 2) {
+          return;
+        }
+
+        routeLine = L.polyline(routePoints, {
+          weight: 5,
+        }).addTo(map);
+      }
+      /* ===========================
            保存済み読み込み
         =========================== */
 
-        async function loadLogs() {
+      async function loadLogs() {
+        const {
+          data: { session },
+        } = await supabaseClient.auth.getSession();
 
-            const {
-                data: { session }
-            } = await supabaseClient.auth.getSession();
+        if (!session) {
+          return;
+        }
 
-            if (!session) {
-                return;
-            }
+        const { data, error } = await supabaseClient
+          .from("travel_logs")
+          .select("*")
+          .eq("user_id", session.user.id)
+          .order("created_at", {
+            ascending: true,
+          });
 
-            const {
-                data,
-                error
-            } = await supabaseClient
-                .from("travel_logs")
-                .select("*")
-                .eq("user_id", session.user.id)
-                .order(
-                    "created_at",
-                    {
-                        ascending: true
-                    }
-                );
+        if (error) {
+          console.error(error);
+          return;
+        }
 
-            if (error) {
-                console.error(error);
-                return;
-            }
+        document.getElementById("logCount").innerHTML = data.length;
 
-            document
-                .getElementById("logCount")
-                .innerHTML = data.length;
+        let historyHtml = "";
 
-            let historyHtml = "";
+        data.forEach((log) => {
+          addMarker(log.latitude, log.longitude, log.memo, log.image_url);
 
-            data.forEach(log => {
-
-                addMarker(
-                    log.latitude,
-                    log.longitude,
-                    log.memo,
-                    log.image_url
-                );
-
-                historyHtml += `
+          historyHtml += `
         <div style="
             border:1px solid #ddd;
             border-radius:8px;
@@ -682,8 +522,7 @@
         ">
 
             <b>
-            ${new Date(log.created_at)
-                        .toLocaleString()}
+            ${new Date(log.created_at).toLocaleString()}
             </b>
 
             <br>
@@ -701,69 +540,55 @@
 
         </div>
         `;
-            });
+        });
 
-            document
-                .getElementById("historyArea")
-                .innerHTML =
-                historyHtml;
-        }
-        async function deleteLog(id) {
-
-            if (!confirm("削除しますか？")) {
-                return;
-            }
-
-            const {
-                error
-            } = await supabaseClient
-                .from("travel_logs")
-                .delete()
-                .eq("id", id);
-
-            if (error) {
-                alert(error.message);
-                return;
-            }
-
-            alert("削除しました");
-
-            location.reload();
+        document.getElementById("historyArea").innerHTML = historyHtml;
+      }
+      async function deleteLog(id) {
+        if (!confirm("削除しますか？")) {
+          return;
         }
 
-        /* ===========================
+        const { error } = await supabaseClient
+          .from("travel_logs")
+          .delete()
+          .eq("id", id);
+
+        if (error) {
+          alert(error.message);
+          return;
+        }
+
+        alert("削除しました");
+
+        location.reload();
+      }
+
+      /* ===========================
    写真プレビュー
 =========================== */
 
-        document
-            .getElementById("photo")
-            .addEventListener("change", function () {
+      document.getElementById("photo").addEventListener("change", function () {
+        const file = this.files[0];
 
-                const file = this.files[0];
+        if (!file) return;
 
-                if (!file) return;
+        const reader = new FileReader();
 
-                const reader = new FileReader();
+        reader.onload = function (e) {
+          const preview = document.getElementById("preview");
 
-                reader.onload = function (e) {
+          preview.src = e.target.result;
+          preview.style.display = "block";
+        };
 
-                    const preview =
-                        document.getElementById("preview");
-
-                    preview.src = e.target.result;
-                    preview.style.display = "block";
-                };
-
-                reader.readAsDataURL(file);
-            });
-        /* ===========================
+        reader.readAsDataURL(file);
+      });
+      /* ===========================
            起動
         =========================== */
 
-        checkLogin();
-
+      checkLogin();
     </script>
-
-</body>
-
+  </body>
 </html>
