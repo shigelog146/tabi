@@ -594,35 +594,80 @@
                 addMarker(log.latitude, log.longitude, log.memo, log.image_url);
 
                 historyHtml += `
-        <div style="
-            border:1px solid #ddd;
-            border-radius:8px;
-            padding:10px;
-            margin-top:10px;
-        ">
+<div style="
+    border:1px solid #ddd;
+    border-radius:8px;
+    padding:10px;
+    margin-top:10px;
+">
 
-            <b>
-            ${new Date(log.created_at).toLocaleString()}
-            </b>
+    <b>
+        ${new Date(log.created_at).toLocaleString()}
+    </b>
 
-            <br>
+    <br><br>
 
-            ${log.memo || "メモなし"}
+    ${log.memo || "メモなし"}
 
-            <br><br>
+    <br><br>
 
-            <button
-                onclick="deleteLog(${log.id})">
+    ${log.image_url
+                        ? `
+        <img
+            src="${log.image_url}"
+            style="
+                width:100%;
+                max-width:300px;
+                border-radius:10px;
+                cursor:pointer;
+            "
+            onclick="showImage('${log.image_url}')"
+        >
+        <br><br>
+        `
+                        : ""
+                    }
 
-                削除
+    <button onclick="deleteLog(${log.id})">
+        削除
+    </button>
 
-            </button>
-
-        </div>
-        `;
+</div>
+`;
             });
 
             document.getElementById("historyArea").innerHTML = historyHtml;
+        }
+        function showImage(url) {
+
+            const modal = document.createElement("div");
+
+            modal.style.position = "fixed";
+            modal.style.left = "0";
+            modal.style.top = "0";
+            modal.style.width = "100%";
+            modal.style.height = "100%";
+            modal.style.background = "rgba(0,0,0,0.8)";
+            modal.style.display = "flex";
+            modal.style.alignItems = "center";
+            modal.style.justifyContent = "center";
+            modal.style.zIndex = "9999";
+
+            modal.innerHTML = `
+        <img
+            src="${url}"
+            style="
+                max-width:95%;
+                max-height:95%;
+                border-radius:10px;
+            ">
+    `;
+
+            modal.onclick = () => {
+                document.body.removeChild(modal);
+            };
+
+            document.body.appendChild(modal);
         }
         async function deleteLog(id) {
             if (!confirm("削除しますか？")) {
