@@ -1,7 +1,8 @@
-<!doctype html>
+<!DOCTYPE html>
 
 <html lang="ja">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -9,169 +10,154 @@
 
     <!-- Leaflet -->
 
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-      body {
-        font-family: sans-serif;
-        background: #f4f6f9;
-      }
+        body {
+            font-family: sans-serif;
+            background: #f4f6f9;
+        }
 
-      header {
-        background: #1976d2;
-        color: white;
-        padding: 15px;
-        text-align: center;
-        font-size: 24px;
-        font-weight: bold;
-      }
+        header {
+            background: #1976d2;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
 
-      .container {
-        padding: 15px;
-      }
+        .container {
+            padding: 15px;
+        }
 
-      .card {
-        background: white;
-        border-radius: 12px;
-        padding: 15px;
-        margin-bottom: 15px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
 
-      input {
-        width: 100%;
-        padding: 12px;
-        margin-top: 10px;
-        margin-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 8px;
-        font-size: 16px;
-      }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
 
-      button {
-        width: 100%;
-        padding: 14px;
-        border: none;
-        border-radius: 8px;
-        font-size: 18px;
-        cursor: pointer;
-        margin-top: 8px;
-      }
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
 
-      .primary {
-        background: #1976d2;
-        color: white;
-      }
+        .primary {
+            background: #1976d2;
+            color: white;
+        }
 
-      .success {
-        background: #2e7d32;
-        color: white;
-      }
+        .success {
+            background: #2e7d32;
+            color: white;
+        }
 
-      .danger {
-        background: #d32f2f;
-        color: white;
-      }
+        .danger {
+            background: #d32f2f;
+            color: white;
+        }
 
-      #map {
-        width: 100%;
-        height: 500px;
-        border-radius: 12px;
-        touch-action: pan-y;
-      }
+        #map {
+            width: 100%;
+            height: 500px;
+            border-radius: 12px;
+            touch-action: pan-y;
+        }
 
-      #userInfo {
-        font-weight: bold;
-        margin-bottom: 10px;
-      }
+        #userInfo {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
 
-      .hidden {
-        display: none;
-      }
+        .hidden {
+            display: none;
+        }
     </style>
-  </head>
+</head>
 
-  <body>
+<body>
     <header>旅行ログアプリ</header>
 
     <div class="container">
-      <!-- ログイン画面 -->
-      <div id="authArea" class="card">
-        <h2>ログイン</h2>
+        <!-- ログイン画面 -->
+        <div id="authArea" class="card">
+            <h2>ログイン</h2>
 
-        <input type="email" id="email" placeholder="メールアドレス" />
+            <input type="email" id="email" placeholder="メールアドレス" />
 
-        <input type="password" id="password" placeholder="パスワード" />
+            <input type="password" id="password" placeholder="パスワード" />
 
-        <button class="primary" onclick="signUp()">新規登録</button>
+            <button class="primary" onclick="signUp()">新規登録</button>
 
-        <button class="success" onclick="login()">ログイン</button>
-      </div>
-
-      <!-- アプリ画面 -->
-      <div id="appArea" class="hidden">
-        <div class="card">
-          <div id="userInfo"></div>
-
-          <button class="danger" onclick="logout()">ログアウト</button>
+            <button class="success" onclick="login()">ログイン</button>
         </div>
-        <div class="card">
-          <h3>旅行記録</h3>
 
-          <textarea
-            id="memo"
-            placeholder="メモを入力"
-            style="
+        <!-- アプリ画面 -->
+        <div id="appArea" class="hidden">
+            <div class="card">
+                <div id="userInfo"></div>
+
+                <button class="danger" onclick="logout()">ログアウト</button>
+            </div>
+            <div class="card">
+                <h3>旅行記録</h3>
+
+                <textarea id="memo" placeholder="メモを入力" style="
               width: 100%;
               height: 100px;
               padding: 10px;
               border-radius: 8px;
               border: 1px solid #ccc;
               margin-top: 10px;
-            "
-          ></textarea>
+            "></textarea>
 
-          <br /><br />
+                <br /><br />
 
-          <input
-            type="file"
-            id="photo"
-            accept="image/*"
-            capture="environment"
-          />
+                <input type="file" id="photo" accept="image/*" capture="environment" />
 
-          <img
-            id="preview"
-            style="
+                <img id="preview" style="
               width: 100%;
               max-width: 300px;
               margin-top: 10px;
               display: none;
               border-radius: 10px;
-            "
-          />
-        </div>
-        <div class="card">
-          <h3>現在地マップ</h3>
+            " />
+            </div>
+            <div class="card">
+                <h3>現在地マップ</h3>
 
-          <div id="map"></div>
-        </div>
-        <button class="success" onclick="saveLocation()">現在地を記録</button>
-        <div class="card">
-          <h3>訪問履歴 (<span id="logCount">0</span>件)</h3>
+                <div id="map"></div>
+            </div>
+            <button class="success" onclick="saveLocation()">現在地を記録</button>
+            <div class="card">
+                <h3>訪問履歴 (<span id="logCount">0</span>件)</h3>
 
-          <div id="historyArea"></div>
+                <div id="historyArea"></div>
+            </div>
         </div>
-      </div>
     </div>
 
     <!-- Supabase -->
@@ -184,335 +170,430 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet-gesture-handling/dist/leaflet-gesture-handling.min.css"
-    />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-gesture-handling/dist/leaflet-gesture-handling.min.css" />
 
     <script src="https://unpkg.com/leaflet-gesture-handling/dist/leaflet-gesture-handling.min.js"></script>
     <script>
-      /* ===========================
-           Supabase設定
-        =========================== */
+        /* ===========================
+             Supabase設定
+          =========================== */
 
-      const SUPABASE_URL = "https://flefnottwzsbihgrqrqk.supabase.co";
+        const SUPABASE_URL = "https://flefnottwzsbihgrqrqk.supabase.co";
 
-      const SUPABASE_API_KEY =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZsZWZub3R0d3pzYmloZ3JxcnFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxOTgxNzMsImV4cCI6MjA4OTc3NDE3M30.gvqf7_VRMZiPcGmQsWk_DCEJ0JmD_wcCCVzl-L9URKc";
+        const SUPABASE_API_KEY =
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZsZWZub3R0d3pzYmloZ3JxcnFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxOTgxNzMsImV4cCI6MjA4OTc3NDE3M30.gvqf7_VRMZiPcGmQsWk_DCEJ0JmD_wcCCVzl-L9URKc";
 
-      const supabaseClient = window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_API_KEY,
-      );
+        const supabaseClient = window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_API_KEY,
+        );
 
-      /* ===========================
-           グローバル
-        =========================== */
+        /* ===========================
+             グローバル
+          =========================== */
 
-      let map;
-      let currentMarker;
-      let routePoints = [];
-      let routeLine = null;
+        let map;
+        let currentMarker;
+        let routePoints = [];
+        let routeLine = null;
 
-      /* ===========================
-           新規登録
-        =========================== */
+        /* ===========================
+             新規登録
+          =========================== */
 
-      async function signUp() {
-        const email = document.getElementById("email").value;
+        async function signUp() {
+            const email = document.getElementById("email").value;
 
-        const password = document.getElementById("password").value;
+            const password = document.getElementById("password").value;
 
-        const { error } = await supabaseClient.auth.signUp({
-          email,
-          password,
-        });
+            const { error } = await supabaseClient.auth.signUp({
+                email,
+                password,
+            });
 
-        if (error) {
-          alert(error.message);
-          return;
-        }
-
-        alert("登録しました。メール認証してください。");
-      }
-
-      /* ===========================
-           ログイン
-        =========================== */
-
-      async function login() {
-        const email = document.getElementById("email").value;
-
-        const password = document.getElementById("password").value;
-
-        const { error } = await supabaseClient.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (error) {
-          alert(error.message);
-          return;
-        }
-
-        await checkLogin();
-      }
-
-      /* ===========================
-           ログアウト
-        =========================== */
-
-      async function logout() {
-        await supabaseClient.auth.signOut();
-
-        location.reload();
-      }
-
-      /* ===========================
-           ログイン確認
-        =========================== */
-
-      async function checkLogin() {
-        const {
-          data: { session },
-        } = await supabaseClient.auth.getSession();
-
-        if (!session) {
-          document.getElementById("authArea").classList.remove("hidden");
-
-          document.getElementById("appArea").classList.add("hidden");
-
-          return;
-        }
-
-        document.getElementById("authArea").classList.add("hidden");
-
-        document.getElementById("appArea").classList.remove("hidden");
-
-        document.getElementById("userInfo").innerHTML = session.user.email;
-
-        initMap();
-
-        await loadLogs();
-      }
-
-      /* ===========================
-           地図初期化
-        =========================== */
-
-      async function initMap() {
-        if (map) {
-          return;
-        }
-
-        map = L.map("map", {
-          gestureHandling: true,
-          scrollWheelZoom: false,
-        }).setView([35.138, 132.225], 13);
-
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          attribution: "&copy; OpenStreetMap",
-        }).addTo(map);
-
-        getCurrentLocation();
-      }
-
-      /* ===========================
-           現在地取得
-        =========================== */
-
-      function getCurrentLocation() {
-        navigator.geolocation.getCurrentPosition(
-          function (position) {
-            const lat = position.coords.latitude;
-
-            const lng = position.coords.longitude;
-
-            map.setView([lat, lng], 15);
-
-            if (currentMarker) {
-              map.removeLayer(currentMarker);
+            if (error) {
+                alert(error.message);
+                return;
             }
 
-            currentMarker = L.marker([lat, lng])
-              .addTo(map)
-              .bindPopup("現在地")
-              .openPopup();
-          },
+            alert("登録しました。メール認証してください。");
+        }
 
-          function (error) {
-            alert("GPS取得失敗 : " + error.message);
-          },
+        /* ===========================
+             ログイン
+          =========================== */
 
-          {
-            enableHighAccuracy: true,
-          },
-        );
-      }
-      /* ===========================
-           現在地保存
-        =========================== */
+        async function login() {
+            const email = document.getElementById("email").value;
 
-      async function saveLocation() {
-        try {
-          const {
-            data: { session },
-          } = await supabaseClient.auth.getSession();
+            const password = document.getElementById("password").value;
 
-          if (!session) {
-            alert("ログインしてください");
-            return;
-          }
+            const { error } = await supabaseClient.auth.signInWithPassword({
+                email,
+                password,
+            });
 
-          navigator.geolocation.getCurrentPosition(
-            async (position) => {
-              const lat = position.coords.latitude;
-
-              const lng = position.coords.longitude;
-
-              const memo = document.getElementById("memo").value;
-
-              let imageUrl = null;
-
-              const file = document.getElementById("photo").files[0];
-
-              /* ===================
-                           Storage保存
-                        ==================== */
-
-              if (file) {
-                const fileName = Date.now() + "_" + file.name;
-
-                const { error: uploadError } = await supabaseClient.storage
-                  .from("travel-images")
-                  .upload(fileName, file);
-
-                if (uploadError) {
-                  alert(uploadError.message);
-
-                  return;
-                }
-
-                const { data: urlData } = supabaseClient.storage
-                  .from("travel-images")
-                  .getPublicUrl(fileName);
-
-                imageUrl = urlData.publicUrl;
-              }
-
-              /* ===================
-                           DB保存
-                        ==================== */
-
-              const { error } = await supabaseClient
-                .from("travel_logs")
-                .insert({
-                  user_id: session.user.id,
-
-                  latitude: lat,
-
-                  longitude: lng,
-
-                  memo: memo,
-
-                  image_url: imageUrl,
-                });
-
-              if (error) {
+            if (error) {
                 alert(error.message);
+                return;
+            }
+
+            await checkLogin();
+        }
+
+        /* ===========================
+             ログアウト
+          =========================== */
+
+        async function logout() {
+            await supabaseClient.auth.signOut();
+
+            location.reload();
+        }
+
+        /* ===========================
+             ログイン確認
+          =========================== */
+
+        async function checkLogin() {
+            const {
+                data: { session },
+            } = await supabaseClient.auth.getSession();
+
+            if (!session) {
+                document.getElementById("authArea").classList.remove("hidden");
+
+                document.getElementById("appArea").classList.add("hidden");
 
                 return;
-              }
+            }
 
-              addMarker(lat, lng, memo, imageUrl);
+            document.getElementById("authArea").classList.add("hidden");
 
-              document.getElementById("memo").value = "";
+            document.getElementById("appArea").classList.remove("hidden");
 
-              document.getElementById("photo").value = "";
+            document.getElementById("userInfo").innerHTML = session.user.email;
 
-              alert("保存しました");
-              location.reload();
-            },
+            initMap();
 
-            (error) => {
-              alert(error.message);
-            },
-
-            {
-              enableHighAccuracy: true,
-            },
-          );
-        } catch (error) {
-          alert(error.message);
-        }
-      }
-      /* ===========================
-           マーカー表示
-        =========================== */
-
-      function addMarker(lat, lng, memo, imageUrl) {
-        let html = "";
-
-        if (memo) {
-          html += "<b>メモ</b><br>" + memo + "<br><br>";
+            await loadLogs();
         }
 
-        if (imageUrl) {
-          html += "<img src='" + imageUrl + "' style='width:200px'>";
+        /* ===========================
+             地図初期化
+          =========================== */
+
+        async function initMap() {
+            if (map) {
+                return;
+            }
+
+            map = L.map("map", {
+                gestureHandling: true,
+                scrollWheelZoom: false,
+            }).setView([35.138, 132.225], 13);
+
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                attribution: "&copy; OpenStreetMap",
+            }).addTo(map);
+
+            getCurrentLocation();
         }
 
-        L.marker([lat, lng]).addTo(map).bindPopup(html);
+        /* ===========================
+             現在地取得
+          =========================== */
 
-        routePoints.push([lat, lng]);
-        drawRoute();
-      }
-      function drawRoute() {
-        if (routeLine) {
-          map.removeLayer(routeLine);
+        function getCurrentLocation() {
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    const lat = position.coords.latitude;
+
+                    const lng = position.coords.longitude;
+
+                    map.setView([lat, lng], 15);
+
+                    if (currentMarker) {
+                        map.removeLayer(currentMarker);
+                    }
+
+                    currentMarker = L.marker([lat, lng])
+                        .addTo(map)
+                        .bindPopup("現在地")
+                        .openPopup();
+                },
+
+                function (error) {
+                    alert("GPS取得失敗 : " + error.message);
+                },
+
+                {
+                    enableHighAccuracy: true,
+                },
+            );
         }
 
-        if (routePoints.length < 2) {
-          return;
+        /* ===========================
+   画像圧縮
+=========================== */
+        async function compressImage(file) {
+
+            return new Promise((resolve) => {
+
+                const reader = new FileReader();
+
+                reader.onload = (event) => {
+
+                    const img = new Image();
+
+                    img.onload = () => {
+
+                        const canvas = document.createElement("canvas");
+                        const ctx = canvas.getContext("2d");
+
+                        let width = img.width;
+                        let height = img.height;
+
+                        const maxSize = 1200;
+
+                        // 長辺を1600pxに縮小
+                        if (width > height) {
+
+                            if (width > maxSize) {
+                                height = height * (maxSize / width);
+                                width = maxSize;
+                            }
+
+                        } else {
+
+                            if (height > maxSize) {
+                                width = width * (maxSize / height);
+                                height = maxSize;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+
+                        ctx.drawImage(
+                            img,
+                            0,
+                            0,
+                            width,
+                            height
+                        );
+
+                        canvas.toBlob(
+
+                            (blob) => {
+
+                                const compressedFile =
+                                    new File(
+                                        [blob],
+                                        file.name.replace(/\.[^/.]+$/, "") + ".jpg",
+                                        {
+                                            type: "image/jpeg"
+                                        }
+                                    );
+
+                                resolve(compressedFile);
+
+                            },
+
+                            "image/jpeg",
+
+                            0.6 // 品質60%
+
+                        );
+
+                    };
+
+                    img.src = event.target.result;
+
+                };
+
+                reader.readAsDataURL(file);
+
+            });
+
         }
+        /* ===========================
+             現在地保存
+          =========================== */
 
-        routeLine = L.polyline(routePoints, {
-          weight: 5,
-        }).addTo(map);
-      }
-      /* ===========================
-           保存済み読み込み
-        =========================== */
+        async function saveLocation() {
+            try {
+                const {
+                    data: { session },
+                } = await supabaseClient.auth.getSession();
 
-      async function loadLogs() {
-        const {
-          data: { session },
-        } = await supabaseClient.auth.getSession();
+                if (!session) {
+                    alert("ログインしてください");
+                    return;
+                }
 
-        if (!session) {
-          return;
+                navigator.geolocation.getCurrentPosition(
+                    async (position) => {
+                        const lat = position.coords.latitude;
+
+                        const lng = position.coords.longitude;
+
+                        const memo = document.getElementById("memo").value;
+
+                        let imageUrl = null;
+
+                        const file = document.getElementById("photo").files[0];
+
+                        /* ===================
+                                     Storage保存
+                                  ==================== */
+
+                        if (file) {
+
+                            // 圧縮
+                            const compressedFile =
+                                await compressImage(file);
+
+                            const fileName =
+                                Date.now() + "_" + compressedFile.name;
+
+                            const { error: uploadError } =
+                                await supabaseClient.storage
+                                    .from("travel-images")
+                                    .upload(
+                                        fileName,
+                                        compressedFile,
+                                        {
+                                            contentType: "image/jpeg"
+                                        }
+                                    );
+
+                            if (uploadError) {
+                                alert(uploadError.message);
+
+                                return;
+                            }
+
+                            const { data: urlData } = supabaseClient.storage
+                                .from("travel-images")
+                                .getPublicUrl(fileName);
+
+                            imageUrl = urlData.publicUrl;
+                        }
+
+                        /* ===================
+                                     DB保存
+                                  ==================== */
+
+                        const { error } = await supabaseClient
+                            .from("travel_logs")
+                            .insert({
+                                user_id: session.user.id,
+
+                                latitude: lat,
+
+                                longitude: lng,
+
+                                memo: memo,
+
+                                image_url: imageUrl,
+                            });
+
+                        if (error) {
+                            alert(error.message);
+
+                            return;
+                        }
+
+                        addMarker(lat, lng, memo, imageUrl);
+
+                        document.getElementById("memo").value = "";
+
+                        document.getElementById("photo").value = "";
+
+                        alert("保存しました");
+                        location.reload();
+                    },
+
+                    (error) => {
+                        alert(error.message);
+                    },
+
+                    {
+                        enableHighAccuracy: true,
+                    },
+                );
+            } catch (error) {
+                alert(error.message);
+            }
         }
+        /* ===========================
+             マーカー表示
+          =========================== */
 
-        const { data, error } = await supabaseClient
-          .from("travel_logs")
-          .select("*")
-          .eq("user_id", session.user.id)
-          .order("created_at", {
-            ascending: true,
-          });
+        function addMarker(lat, lng, memo, imageUrl) {
+            let html = "";
 
-        if (error) {
-          console.error(error);
-          return;
+            if (memo) {
+                html += "<b>メモ</b><br>" + memo + "<br><br>";
+            }
+
+            if (imageUrl) {
+                html += "<img src='" + imageUrl + "' style='width:200px'>";
+            }
+
+            L.marker([lat, lng]).addTo(map).bindPopup(html);
+
+            routePoints.push([lat, lng]);
+            drawRoute();
         }
+        function drawRoute() {
+            if (routeLine) {
+                map.removeLayer(routeLine);
+            }
 
-        document.getElementById("logCount").innerHTML = data.length;
+            if (routePoints.length < 2) {
+                return;
+            }
 
-        let historyHtml = "";
+            routeLine = L.polyline(routePoints, {
+                weight: 5,
+            }).addTo(map);
+        }
+        /* ===========================
+             保存済み読み込み
+          =========================== */
 
-        data.forEach((log) => {
-          addMarker(log.latitude, log.longitude, log.memo, log.image_url);
+        async function loadLogs() {
+            const {
+                data: { session },
+            } = await supabaseClient.auth.getSession();
 
-          historyHtml += `
+            if (!session) {
+                return;
+            }
+
+            const { data, error } = await supabaseClient
+                .from("travel_logs")
+                .select("*")
+                .eq("user_id", session.user.id)
+                .order("created_at", {
+                    ascending: true,
+                });
+
+            if (error) {
+                console.error(error);
+                return;
+            }
+
+            document.getElementById("logCount").innerHTML = data.length;
+
+            let historyHtml = "";
+
+            data.forEach((log) => {
+                addMarker(log.latitude, log.longitude, log.memo, log.image_url);
+
+                historyHtml += `
         <div style="
             border:1px solid #ddd;
             border-radius:8px;
@@ -539,55 +620,56 @@
 
         </div>
         `;
+            });
+
+            document.getElementById("historyArea").innerHTML = historyHtml;
+        }
+        async function deleteLog(id) {
+            if (!confirm("削除しますか？")) {
+                return;
+            }
+
+            const { error } = await supabaseClient
+                .from("travel_logs")
+                .delete()
+                .eq("id", id);
+
+            if (error) {
+                alert(error.message);
+                return;
+            }
+
+            alert("削除しました");
+
+            location.reload();
+        }
+
+        /* ===========================
+     写真プレビュー
+  =========================== */
+
+        document.getElementById("photo").addEventListener("change", function () {
+            const file = this.files[0];
+
+            if (!file) return;
+
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const preview = document.getElementById("preview");
+
+                preview.src = e.target.result;
+                preview.style.display = "block";
+            };
+
+            reader.readAsDataURL(file);
         });
+        /* ===========================
+             起動
+          =========================== */
 
-        document.getElementById("historyArea").innerHTML = historyHtml;
-      }
-      async function deleteLog(id) {
-        if (!confirm("削除しますか？")) {
-          return;
-        }
-
-        const { error } = await supabaseClient
-          .from("travel_logs")
-          .delete()
-          .eq("id", id);
-
-        if (error) {
-          alert(error.message);
-          return;
-        }
-
-        alert("削除しました");
-
-        location.reload();
-      }
-
-      /* ===========================
-   写真プレビュー
-=========================== */
-
-      document.getElementById("photo").addEventListener("change", function () {
-        const file = this.files[0];
-
-        if (!file) return;
-
-        const reader = new FileReader();
-
-        reader.onload = function (e) {
-          const preview = document.getElementById("preview");
-
-          preview.src = e.target.result;
-          preview.style.display = "block";
-        };
-
-        reader.readAsDataURL(file);
-      });
-      /* ===========================
-           起動
-        =========================== */
-
-      checkLogin();
+        checkLogin();
     </script>
-  </body>
+</body>
+
 </html>
