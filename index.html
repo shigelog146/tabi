@@ -273,6 +273,38 @@
 
             location.reload();
         }
+
+        /* ===========================
+   画像をBase64へ変換
+=========================== */
+        async function imageToBase64(url) {
+
+            try {
+
+                const response = await fetch(url);
+
+                const blob = await response.blob();
+
+                return await new Promise(resolve => {
+
+                    const reader = new FileReader();
+
+                    reader.onloadend = () => {
+                        resolve(reader.result);
+                    };
+
+                    reader.readAsDataURL(blob);
+
+                });
+
+            } catch (error) {
+
+                console.error(error);
+
+                return null;
+
+            }
+        }
         /* ===========================
            HTMLアルバム出力
         =========================== */
@@ -349,9 +381,26 @@ ${new Date().toLocaleString()}
 </p>
 `;
 
-            data.forEach(log => {
+            for (const log of data) {
+
+                let embeddedImage = "";
+
+                if (log.image_url) {
+
+                    const base64 =
+                        await imageToBase64(log.image_url);
+
+                    if (base64) {
+
+                        embeddedImage =
+                            `<img src="${base64}">`;
+
+                    }
+
+                }
 
                 html += `
+
 <div class="card">
 
 <div class="date">
@@ -366,12 +415,7 @@ ${log.memo || "メモなし"}
 
 <br>
 
-${log.image_url
-                        ?
-                        `<img src="${log.image_url}">`
-                        :
-                        ""
-                    }
+${embeddedImage}
 
 <br><br>
 
@@ -384,8 +428,10 @@ ${log.latitude}
 ${log.longitude}
 
 </div>
+
 `;
-            });
+
+            }
 
             html += `
 </body>
@@ -453,6 +499,9 @@ ${log.longitude}
                         .storage
                         .from("travel-images")
                         .remove(files);
+
+                console.log("削除対象", files);
+                console.log("Storage削除エラー", storageError);
 
                 if (storageError) {
                     alert(storageError.message);
