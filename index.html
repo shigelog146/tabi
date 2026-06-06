@@ -151,7 +151,18 @@
 
                 <div id="map"></div>
             </div>
-            <button class="success" onclick="saveLocation()">現在地を記録</button>
+            <button class="success" onclick="saveLocation()">
+                現在地を記録
+            </button>
+
+            <button class="primary" onclick="exportAlbum()">
+                思い出アルバムを書き出す
+            </button>
+
+            <button class="danger" onclick="exportAndDelete()">
+                アルバム保存して全削除
+            </button>
+
             <div class="card">
                 <h3>訪問履歴 (<span id="logCount">0</span>件)</h3>
 
@@ -250,7 +261,210 @@
 
             location.reload();
         }
+        /* ===========================
+           HTMLアルバム出力
+        =========================== */
+        async function exportAlbum() {
 
+            const {
+                data: { session }
+            } = await supabaseClient.auth.getSession();
+
+            if (!session) {
+                alert("ログインしてください");
+                return;
+            }
+
+            const { data, error } = await supabaseClient
+                .from("travel_logs")
+                .select("*")
+                .eq("user_id", session.user.id)
+                .order("created_at", {
+                    ascending: true
+                });
+
+            if (error) {
+                alert(error.message);
+                return;
+            }
+
+            let html = `
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>旅の思い出アルバム</title>
+
+<style>
+
+body{
+    font-family:sans-serif;
+    background:#f5f5f5;
+    padding:20px;
+}
+
+h1{
+    text-align:center;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    margin-bottom:20px;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.15);
+}
+
+img{
+    max-width:100%;
+    border-radius:10px;
+}
+
+.date{
+    font-weight:bold;
+    color:#1976d2;
+}
+
+</style>
+</head>
+<body>
+
+<h1>旅の思い出アルバム</h1>
+
+<p>
+作成日 :
+${new Date().toLocaleString()}
+</p>
+`;
+
+            data.forEach(log => {
+
+                html += `
+<div class="card">
+
+<div class="date">
+${new Date(log.created_at).toLocaleString()}
+</div>
+
+<br>
+
+<div>
+${log.memo || "メモなし"}
+</div>
+
+<br>
+
+${log.image_url
+                        ?
+                        `<img src="${log.image_url}">`
+                        :
+                        ""
+                    }
+
+<br><br>
+
+緯度:
+${log.latitude}
+
+<br>
+
+経度:
+${log.longitude}
+
+</div>
+`;
+            });
+
+            html += `
+</body>
+</html>
+`;
+
+            const blob = new Blob(
+                [html],
+                {
+                    type: "text/html"
+                }
+            );
+
+            const url =
+                URL.createObjectURL(blob);
+
+            const a =
+                document.createElement("a");
+
+            a.href = url;
+
+            a.download =
+                "travel_album.html";
+
+            a.click();
+
+            URL.revokeObjectURL(url);
+
+            alert("アルバムを保存しました");
+        }
+
+        async function exportAndDelete() {
+
+            await exportAlbum();
+
+            const ok = confirm(
+                "アルバム保存後に全データを削除します。\n続行しますか？"
+            );
+
+            if (!ok) return;
+
+            const {
+                data: { session }
+            } = await supabaseClient.auth.getSession();
+
+            const { data, error } =
+                await supabaseClient
+                    .from("travel_logs")
+                    .select("*")
+                    .eq("user_id", session.user.id);
+
+            if (error) {
+                alert(error.message);
+                return;
+            }
+
+            const files = data
+                .filter(x => x.file_name)
+                .map(x => x.file_name);
+
+            if (files.length > 0) {
+
+                const { error: storageError } =
+                    await supabaseClient
+                        .storage
+                        .from("travel-images")
+                        .remove(files);
+
+                if (storageError) {
+                    alert(storageError.message);
+                    return;
+                }
+            }
+
+            const { error: deleteError } =
+                await supabaseClient
+                    .from("travel_logs")
+                    .delete()
+                    .eq("user_id", session.user.id);
+
+            if (deleteError) {
+                alert(deleteError.message);
+                return;
+            }
+
+            alert(
+                "アルバム保存・写真削除・履歴削除が完了しました"
+            );
+
+            location.reload();
+        }
         /* ===========================
              ログイン確認
           =========================== */
@@ -441,6 +655,7 @@
                         const memo = document.getElementById("memo").value;
 
                         let imageUrl = null;
+                        let fileName = null;
 
                         const file = document.getElementById("photo").files[0];
 
@@ -454,7 +669,7 @@
                             const compressedFile =
                                 await compressImage(file);
 
-                            const fileName =
+                            fileName =
                                 Date.now() + "_" + compressedFile.name;
 
                             const { error: uploadError } =
@@ -497,6 +712,8 @@
                                 memo: memo,
 
                                 image_url: imageUrl,
+
+                                file_name: fileName || null
                             });
 
                         if (error) {
