@@ -647,7 +647,7 @@ ${log.longitude}
                         let width = img.width;
                         let height = img.height;
 
-                        const maxSize = 1200;
+                        const maxSize = 800;
 
                         // 長辺を1600pxに縮小
                         if (width > height) {
@@ -695,7 +695,7 @@ ${log.longitude}
 
                             "image/jpeg",
 
-                            0.5 // 品質50%
+                            0.3 // 品質50%
 
                         );
 
@@ -895,8 +895,13 @@ ${log.longitude}
 
             let historyHtml = "";
 
-            data.forEach((log) => {
-                addMarker(log.latitude, log.longitude, log.memo, log.image_url);
+            data.slice(0, 50).forEach((log) => {
+                addMarker(
+                    log.latitude,
+                    log.longitude,
+                    log.memo,
+                    null
+                );
 
                 historyHtml += `
 <div style="
@@ -918,18 +923,11 @@ ${log.longitude}
 
     ${log.image_url
                         ? `
-        <img
-            src="${log.image_url}"
-            style="
-                width:100%;
-                max-width:300px;
-                border-radius:10px;
-                cursor:pointer;
-            "
-            onclick="showImage('${log.image_url}')"
-        >
-        <br><br>
-        `
+    <button
+        onclick="showImage('${log.image_url}')">
+        写真を見る
+    </button>
+`
                         : ""
                     }
 
