@@ -621,8 +621,10 @@ ${log.longitude}
                 },
 
                 {
-                    enableHighAccuracy: true,
-                },
+                    enableHighAccuracy: false,
+                    timeout: 3000,
+                    maximumAge: 300000
+                }
             );
         }
 
