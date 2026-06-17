@@ -150,6 +150,11 @@
                 <h3>現在地マップ</h3>
 
                 <div id="map"></div>
+
+                <button class="primary" onclick="getCurrentLocation()" style="margin-top:10px;">
+                    GPS再取得
+                </button>
+
             </div>
             <button class="success" onclick="saveLocation()">
                 現在地を記録
@@ -917,7 +922,8 @@ ${log.longitude}
 
                 alert("保存しました");
 
-                location.reload();
+                // 履歴と地図だけ再読み込み
+                await loadLogs();
 
             } catch (error) {
 
@@ -988,6 +994,17 @@ ${log.longitude}
           =========================== */
 
         async function loadLogs() {
+
+            // 履歴表示を初期化
+            document.getElementById("historyArea").innerHTML = "";
+
+            // ルート情報初期化
+            routePoints = [];
+
+            if (routeLine) {
+                map.removeLayer(routeLine);
+                routeLine = null;
+            }
             const {
                 data: { session },
             } = await supabaseClient.auth.getSession();
@@ -1131,7 +1148,7 @@ ${log.longitude}
 
             alert("削除しました");
 
-            location.reload();
+            await loadLogs();
         }
 
         /* ===========================
